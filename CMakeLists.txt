@@ -8,6 +8,14 @@ add_executable(${PROJECT_NAME}
   src/main.cpp
   src/AnimatedSprite.h
   src/AnimatedSprite.cpp
+  src/GameObject.h
+  src/GameObject.cpp
+  src/Scene.h
+  src/Scene.cpp
+  src/Layer.h
+  src/Layer.cpp
+  src/Rook.h
+  src/Rook.cpp
   )
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")

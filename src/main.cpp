@@ -1,8 +1,10 @@
 #include <SFML/Graphics.hpp>
 
+#include "Rook.h"
 #include "AnimatedSprite.h"
 
 const float PLAYER_SPEED = 3.0f;
+const float DELTA_TIME = 0.01666666666;
 
 int main()
 {
@@ -13,17 +15,15 @@ int main()
     
     sf::View cam = window.getDefaultView();
     
-    AnimatedSprite rook_anim;
-    rook_anim.loadFromFile("res/rook/rook.png", "res/rook/rook.yaml");
-    rook_anim.set_curr("stand_forward");
+    Rook rook;
+    rook.load();
     
-    sf::Clock frameClock;
+    //sf::Clock frameClock;
     
-    bool is_player_moving(false);
     
     while(window.isOpen())
     {
-        rook_anim.update(0.06f);
+        rook.preUpdate(DELTA_TIME);
         
         sf::Event event;
         while( window.pollEvent(event) )
@@ -33,35 +33,18 @@ int main()
             
             if( (event.type == sf::Event::KeyReleased) )
             {
-                if(event.key.code == sf::Keyboard::Left)
-                    rook_anim.set_curr("stand_left");
-                else if(event.key.code == sf::Keyboard::Right)
-                    rook_anim.set_curr("stand_right");
-                else if(event.key.code == sf::Keyboard::Up)
-                    rook_anim.set_curr("stand_backward"); 
-                else if(event.key.code == sf::Keyboard::Down)
-                    rook_anim.set_curr("stand_forward");
-                
-                is_player_moving = false;
+                rook.keyReleased(event.key.code);
             }
             
-            if( (event.type == sf::Event::KeyPressed) && !is_player_moving )
+            if( (event.type == sf::Event::KeyPressed))
             {
-                if(event.key.code == sf::Keyboard::Left)
-                    rook_anim.set_curr("move_left");
-                else if(event.key.code == sf::Keyboard::Right)
-                    rook_anim.set_curr("move_right");
-                else if(event.key.code == sf::Keyboard::Up)
-                    rook_anim.set_curr("move_backward"); 
-                else if(event.key.code == sf::Keyboard::Down)
-                    rook_anim.set_curr("move_forward");
-                
-                is_player_moving = true;
+                rook.keyPressed(event.key.code);
             }
         }
         
-        sf::Time frameTime = frameClock.restart();
+        rook.update(DELTA_TIME);
         
+        // Essentially the physics update
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
             cam.move(PLAYER_SPEED,0);
@@ -79,10 +62,12 @@ int main()
             cam.move(0,-PLAYER_SPEED);
         }
         
+        rook.postUpdate(DELTA_TIME);
+        
         window.setView(cam);
         window.clear(sf::Color(50, 50, 50, 255));
         
-        window.draw(rook_anim.get_curr());
+        rook.draw(&window);
         
         window.display();
     }
