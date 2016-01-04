@@ -1,0 +1,65 @@
+cell_size: 64
+animations:
+- name: stand_left
+  frames:
+  - cell_x: 0
+    cell_y: 1
+    
+- name: move_left
+  timespan: 1
+  frames:
+  - cell_x: 0
+    cell_y: 1
+    time: 0.5
+    
+  - cell_x: 1
+    cell_y: 1
+    time: 0.5
+    
+- name: stand_right
+  frames:
+  - cell_x: 0
+    cell_y: 0
+    time: 0.5
+    
+- name: move_right
+  timespan: 1
+  frames:
+  - cell_x: 0
+    cell_y: 0
+    time: 0.5
+    
+  - cell_x: 1
+    cell_y: 0
+    time: 0.5
+    
+- name: stand_forward
+  frames:
+  - cell_x: 0
+    cell_y: 2
+    
+- name: move_forward
+  frames:
+  - cell_x: 1
+    cell_y: 2
+    time: 0.5
+  
+  - cell_x: 2
+    cell_y: 2
+    time: 0.5
+    
+- name: stand_backward
+  frames:
+  - cell_x: 0
+    cell_y: 3
+    
+- name: move_backward
+  timespan: 1
+  frames:
+  - cell_x: 1
+    cell_y: 3
+    time: 0.5
+    
+  - cell_x: 2
+    cell_y: 3
+    time: 0.5

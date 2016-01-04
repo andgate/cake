@@ -1,39 +1,91 @@
-// Example program:
-// Using SDL2 to create an application window
+#include <SFML/Graphics.hpp>
 
-#include "SDL.h"
-#include <stdio.h>
+#include "AnimatedSprite.h"
 
-int main(int argc, char* argv[])
+const float PLAYER_SPEED = 3.0f;
+
+int main()
 {
-    SDL_Window *window;                    // Declare a pointer
-    SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
-
-    // Create an application window with the following settings:
-    window = SDL_CreateWindow(
-        "An SDL2 window",                  // window title
-        SDL_WINDOWPOS_UNDEFINED,           // initial x position
-        SDL_WINDOWPOS_UNDEFINED,           // initial y position
-        640,                               // width, in pixels
-        480,                               // height, in pixels
-        SDL_WINDOW_OPENGL                  // flags - see below
-    );
-
-    // Check that the window was successfully created
-    if (window == NULL) {
-        // In the case that the window could not be made...
-        printf("Could not create window: %s\n", SDL_GetError());
-        return 1;
+    sf::RenderWindow window(sf::VideoMode(640, 480), "Project Cake", sf::Style::Titlebar | sf::Style::Close);
+    window.setPosition(sf::Vector2i(10,50));
+    window.setVerticalSyncEnabled(true);
+    window.setFramerateLimit(60);
+    
+    sf::View cam = window.getDefaultView();
+    
+    AnimatedSprite rook_anim;
+    rook_anim.loadFromFile("res/rook/rook.png", "res/rook/rook.yaml");
+    rook_anim.set_curr("stand_forward");
+    
+    sf::Clock frameClock;
+    
+    bool is_player_moving(false);
+    
+    while(window.isOpen())
+    {
+        rook_anim.update(0.06f);
+        
+        sf::Event event;
+        while( window.pollEvent(event) )
+        {
+            if( event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+                window.close();
+            
+            if( (event.type == sf::Event::KeyReleased) )
+            {
+                if(event.key.code == sf::Keyboard::Left)
+                    rook_anim.set_curr("stand_left");
+                else if(event.key.code == sf::Keyboard::Right)
+                    rook_anim.set_curr("stand_right");
+                else if(event.key.code == sf::Keyboard::Up)
+                    rook_anim.set_curr("stand_backward"); 
+                else if(event.key.code == sf::Keyboard::Down)
+                    rook_anim.set_curr("stand_forward");
+                
+                is_player_moving = false;
+            }
+            
+            if( (event.type == sf::Event::KeyPressed) && !is_player_moving )
+            {
+                if(event.key.code == sf::Keyboard::Left)
+                    rook_anim.set_curr("move_left");
+                else if(event.key.code == sf::Keyboard::Right)
+                    rook_anim.set_curr("move_right");
+                else if(event.key.code == sf::Keyboard::Up)
+                    rook_anim.set_curr("move_backward"); 
+                else if(event.key.code == sf::Keyboard::Down)
+                    rook_anim.set_curr("move_forward");
+                
+                is_player_moving = true;
+            }
+        }
+        
+        sf::Time frameTime = frameClock.restart();
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        {
+            cam.move(PLAYER_SPEED,0);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        {
+            cam.move(-PLAYER_SPEED,0);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            cam.move(0,PLAYER_SPEED);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            cam.move(0,-PLAYER_SPEED);
+        }
+        
+        window.setView(cam);
+        window.clear(sf::Color(50, 50, 50, 255));
+        
+        window.draw(rook_anim.get_curr());
+        
+        window.display();
     }
-
-    // The window is open: could enter program loop here (see SDL_PollEvent())
-
-    SDL_Delay(3000);  // Pause execution for 3000 milliseconds, for example
-
-    // Close and destroy the window
-    SDL_DestroyWindow(window);
-
-    // Clean up
-    SDL_Quit();
-    return 0;
+    
+    return EXIT_SUCCESS;
 }
